@@ -1,92 +1,108 @@
-# Week-7-Pairs
+# Week 7 Pair Exercises: Cat Cards
+
+## Context
+
+Congratulations on your new job at _HazBro_. You'll be working on their latest project, *Cat Cards*. To facilitate development, the VP in charge of this project split the development staff into three teams: Database, Frontend, and Backend. The VP placed you on the Backend team.
+
+The Frontend team developed their part of the application. However, they need you to provide the data so it works properly. They gave you the following API documentation:
+
+* `GET /api/cards`: Provides a list of all Cat Cards in the user's collection.
+* `GET /api/cards/{id}`: Provides a Cat Card with the given ID.
+* `GET /api/cards/random`: Provides a new, randomly created Cat Card containing information from the cat fact and picture services.
+* `POST /api/cards`: Saves a card to the user's collection.
+* `PUT /api/cards/{id}`: Updates a card in the user's collection.
+* `DELETE /api/cards/{id}`: Removes a card from the user's collection.
+
+### Database
+
+The Database team provided you with a script to create a local database, and with the DAO files to retrieve the data. You can implement your code without reviewing the implementation details of the DAO files. The interface provides you with enough information to complete your tasks.
+
+The database contains 3 cat cards when you begin. 
+
+### Getting started
+
+1. Create a new Postgres database called `catcards`.
+2. Run the script `database/catcards.sql` in pgAdmin to set up your database.
+   **Note**: You'll see a message that says that the "catcards" table doesn't exist the first time you run the `create` script. You can ignore the message.
+3. In IntelliJ, run the project.
+4. In your web browser, navigate to [http://localhost:8080](http://localhost:8080) to open the front-end application. You'll see a page entitled "Welcome to Cat Cards." Initially, some items don't display properly on this page; it only loads the first cat card from the database, as an example. 
+5. As you implement the requirements of this exercise, return to the browser and refresh the page. The features of this page begin working as you complete tasks.
+
+Once you provide implementation for the endpoints and return properly formatted JSON objects in the agreed-upon schema, the application should work! 
+
+> Hint: Consider starting with the controller method that provides a new, randomly created card.
+
+##Implementing the Cat Fact Service and Cat Image Service 
+
+There is a web API that provides you with random cat fact and random cat picture data.  You will use data from this API to build Cat Cards.  Each Cat Card will consist of a cat fact, cat picture, and caption. 
+
+You can use `https://cat-data.netlify.app/api/pictures/random` to retrieve the URL of a random cat picture as a JSON object that looks like this:
+
+```json
+{"file":"https://cat-data.netlify.app/images/cat-with-bananas-527x600.jpg"}
+```
+
+Make sure to implement the `RestCatPicService` to call this endpoint and return the data as a `CatPic` object.
+
+You can use `https://cat-data.netlify.app/api/facts/random` to retrieve a random cat fact as a JSON object that looks like this:
+
+```json
+{
+    "status": {
+        "verified": true,
+        "sentCount": 1
+    },
+    "type": "cat",
+    "deleted": false,
+    "_id": "591f9890d369931519ce352d",
+    "user": "5a9ac18c7478810ea6c06381",
+    "text": "A cat's tongue has tiny barbs on it.",
+    "updatedAt": "2020-08-23T20:20:01.611Z",
+    "createdAt": "2018-04-20T20:20:02.940Z",
+    "__v": 0
+}
+```
+
+Make sure to implement the `RestCatFactService` to call this endpoint and return the data as a `CatFact` object.  Note that the CatFact object may not use all the fields present in the JSON object returned from the API. 
 
 
+### Cat Card JSON object structure
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+Here's the JSON object structure for a Cat Card:
 
 ```
-cd existing_repo
-git remote add origin https://git.techelevator.com/campuses/nlr/jan-2024/java-gray/student-pairs/week-7-pairs.git
-git branch -M main
-git push -uf origin main
+{
+    "catCardId" : an integer that represents this particular card's unique identifier,
+    "imgUrl" : "A string containing the full URL to the cat image",
+    "catFact" : "A string containing a cat fact",
+    "caption" : "A string containing the caption for this particular card"
+}
 ```
 
-## Integrate with your tools
+### Cat Card collection example
 
-- [ ] [Set up project integrations](https://git.techelevator.com/campuses/nlr/jan-2024/java-gray/student-pairs/week-7-pairs/-/settings/integrations)
+Here's an example collection of Cat Cards:
 
-## Collaborate with your team
+```json
+[
+    {
+        "catCardId" : 17,
+        "imgUrl" : "https://cat-data.netlify.app/images/orange-and-white-cat-sleeping-in-yellow-blanket-600x600.jpg",
+        "catFact" : "Cats sleep 70% of their lives.",
+        "caption" : "Aww, this reminds me of Lefty! He slept CONSTANTLY."
+    },
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+    {
+        "catCardId" : 38,
+        "imgUrl" : "https://cat-data.netlify.app/images/gray-cat-with-green-eyes-768x768.jpg",
+        "catFact" : "People who own cats have on average 2.1 pets per household, whereas dog owners have about 1.6.",
+        "caption" : "Bartender, I'll take a Salty *Cat*"
+    }
+]
+```
 
-## Test and Deploy
 
-Use the built-in continuous integration in GitLab.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-***
 
-# Editing this README
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
